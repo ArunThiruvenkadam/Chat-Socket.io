@@ -8,6 +8,11 @@ function MsgObj(message, user) {
 	this.message = message;
 	this.user = user;
 }
+var userObj = {id:undefined, name:undefined};
+function UserObj(id, name) {
+	this.id = id;
+	this.name = name;
+}
 // To load html page
 /*app.get('/', function(req, res) {
 	console("html going to render");
@@ -18,7 +23,8 @@ io.on('connection', function(client){
   
   client.on("join", function(name) {
 	client.username = name;
-	users.push(client.username);
+	users.push(new UserObj(client.id, client.username));
+	console.log(client.username + " : " + client.id);
 	io.sockets.emit("users", users);
 	messages.push(new MsgObj(client.username +" is joined", "info"));
 	io.sockets.emit("messages", messages);
@@ -26,7 +32,7 @@ io.on('connection', function(client){
 
   client.on('disconnect', function(){
 	for(var i = 0; i < users.length; i++) {
-		if(users[i] == client.username) {
+		if(users[i].name == client.username) {
 			users.splice(i, 1);
 		}
 	}
@@ -35,9 +41,16 @@ io.on('connection', function(client){
 	io.sockets.emit("users", users);
   });
   
-  client.on("messages", function(msg) {
-	messages.push(new MsgObj(client.username +" : "+msg, client.username));
-	io.sockets.emit("messages", messages);
+  client.on("messages", function(msg, type) {
+	console.log(type);
+	if(type == "group") {
+		messages.push(new MsgObj(client.username +" : "+msg, client.username));
+		io.sockets.emit("messages", messages);
+	} else {
+		messages.push(new MsgObj(client.username +" : "+msg, client.username));
+		io.to(type).emit("messages", messages);
+	}
+	
   });
 });
 

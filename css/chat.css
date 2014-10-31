@@ -16,7 +16,14 @@
 	padding-left:0px;
 	margin:3px;
 }
-#transparentButton1, #transparentButton2 {
+#transparentButton1 {
+    background-color: Transparent;
+    background-repeat:no-repeat;
+    border: none;
+    cursor:pointer;
+    outline:none;
+}
+.transparentButton2 {
     background-color: Transparent;
     background-repeat:no-repeat;
     border: none;

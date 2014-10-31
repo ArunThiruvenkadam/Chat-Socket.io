@@ -8,9 +8,15 @@
 var socket = io();
 var server = io.connect("http://localhost:8000");
 var name = "";
+var selectedUser = null;
+
 function onSubmit() {
-var msg = document.getElementById("msg").value;
-	server.emit("messages", msg);
+	var msg = document.getElementById("msg").value;
+	if(selectedUser != null) {
+		server.emit("messages", msg, selectedUser.id);
+	} else {
+		server.emit("messages", msg, "group");
+	}
 	document.getElementById("msg").value = "";
 }
 
@@ -40,9 +46,9 @@ function updateUsers(users) {
 	
 	userStr = "";
 	for(var i = 0; i < users.length; i++) {
-		if(users[i] == name) continue;
+		if(users[i].name == name) continue;
 		userStr += "<br>";
-		userStr += "<input type = \"button\" value = \"" + users[i] +"\" id=\"transparentButton1\" onClick=\"new groupBtn()\">";
+		userStr += "<input type = \"button\" value = \"" + users[i].name +"\" id=\""+users[i].id+"\" class=\"transparentButton2\" onClick=\"userClicked(this)\">";
 	}
 	document.getElementById("users").innerHTML = userStr;
 }
@@ -67,6 +73,14 @@ function updateMessage(messages) {
 	}
 	document.getElementById("conversations").innerHTML = msgStr;
 }
+function onGroupClicked() {
+	selectedUser = null;
+}
+function userClicked(element) {
+	alert("User Clicked");
+	selectedUser = element;
+}
+
 </script>
 </head>
 <body>
@@ -75,7 +89,7 @@ function updateMessage(messages) {
 </div>
 <div id="nav" align=center>
 	<br>
-	<input type = "button" value = "Group" id="transparentButton1" onClick="new groupBtn()">
+	<input type = "button" value = "Group" id="transparentButton1" onClick="onGroupClicked()">
 	<br>
 	<div id="available">
 	<h1>Available</h1>
